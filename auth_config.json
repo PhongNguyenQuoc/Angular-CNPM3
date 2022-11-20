@@ -1,0 +1,7 @@
+{
+  "domain": "dev-6gg07cw4rqjhfyih.us.auth0.com",
+  "clientId": "tBYgkeG3pCxmbO31NCNza75ksLfbFqlt",
+  "audience": "localhost:9000/api",
+  "serverUrl": "http://localhost:3000"
+}
+
