@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "^14.2.0",
     "@angular/router": "^14.2.0",
     "@auth0/auth0-angular": "^1.11.0",
+    "@ngxs-labs/emitter": "^4.0.0",
     "@types/file-saver": "^2.0.5",
     "file-saver": "^2.0.5",
     "rxjs": "~7.5.0",
