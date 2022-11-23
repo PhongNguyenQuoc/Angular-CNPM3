@@ -1,4 +1,4 @@
-<form [formGroup]="formLogin" (ngSubmit)="onLogin()">
+<form [formGroup]="formLogin" (ngSubmit)="onLogin()" >
     <div class="mb-3">
       <label for="exampleInputEmail1" class="form-label">Email address</label>
       <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" formControlName="username">
@@ -13,8 +13,8 @@
       <label class="form-check-label" for="exampleCheck1">Check me out</label>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-  </form> -->
-<button class="nav-link text-white font-weight-bold px-0 btn--login" (click)="loginWithRedirect()">
+  </form>
+<button class="nav-link text-white font-weight-bold px-0 btn--login" (click)="onLogin()">
   <i class="fa fa-user me-sm-1"></i>
   <span class="d-sm-inline d-none">Sign In</span>
 </button>

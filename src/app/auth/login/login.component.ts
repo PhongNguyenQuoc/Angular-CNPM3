@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { LoginService } from './../../Services/login.service';
 import Swal from 'sweetalert2';
-import { AuthModule, AuthService } from '@auth0/auth0-angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +11,7 @@ import { AuthModule, AuthService } from '@auth0/auth0-angular';
 })
 export class LoginComponent implements OnInit {
   formLogin!: FormGroup;
-  constructor(private LoginService: LoginService, private fb: FormBuilder,public auth: AuthService) {}
+  constructor(private LoginService: LoginService, private fb: FormBuilder, private router: Router) {}
 
   ngOnInit(): void {
     this.formLogin = this.fb.group({
@@ -26,10 +26,7 @@ export class LoginComponent implements OnInit {
       return
     }
     this.LoginService.login(this.formLogin.value).subscribe((res) => {
-      console.log(res)
-      if(res.status === 401) {
-        Swal.fire('account is incorrect');
-      }
+      this.router.navigate(['home'])
     },
     (error => {
       if(error.status === 401) {
@@ -37,8 +34,5 @@ export class LoginComponent implements OnInit {
       }
     })
     )
-  }
-  loginWithRedirect() {
-    this.auth.loginWithRedirect()
   }
 }

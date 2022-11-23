@@ -24,29 +24,29 @@ export class UsersComponent implements OnInit {
   constructor(private user: UserService,private router: Router, private exportService: ExportExelService) { }
 
   ngOnInit(): void {
-    if(this.auth==true) {
+    if(!!localStorage.getItem('Authen')) {
       this.user.getAll().subscribe(res => {
       this.users = res
-    })
+    },(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'ACCESS IS DENIED',
+        confirmButtonText: 'Return Home',
+        footer: 'Access denied by URL authorization policy on the Web server.'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/'])
+        }
+      })
+    }))
     }
     else
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'ACCESS IS DENIED',
-      confirmButtonText: 'Return Home',
-      footer: 'Access denied by URL authorization policy on the Web server.'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.router.navigate(['/'])
-      }
-    })
-    
+      this.router.navigate(['/login'])
   }
 
   export_exel() {
     this.exportService.exportTableElmToExcel(this.userTable, 'user_data');
-
   }
 
 }

@@ -8,11 +8,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MarkComponent } from './components/mark/mark.component';
 import { from } from 'rxjs';
+import { AuthGuard } from './auth/_services/Auth.guard';
 
 export const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {
-    path: '',
+    path: '',canActivate:[AuthGuard],
     children: [
       {
         path: 'home', component: HomeComponent,
@@ -30,6 +31,6 @@ export const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-exports: [RouterModule],
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

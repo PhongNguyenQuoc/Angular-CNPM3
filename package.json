@@ -22,6 +22,7 @@
     "@ngxs-labs/emitter": "^4.0.0",
     "@types/file-saver": "^2.0.5",
     "file-saver": "^2.0.5",
+    "ngx-cookie-service": "^15.0.0",
     "rxjs": "~7.5.0",
     "sweetalert2": "^11.6.2",
     "tslib": "^2.3.0",
