@@ -7,8 +7,9 @@ import {SubjectComponent} from './components/subject/subject.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MarkComponent } from './components/mark/mark.component';
+import { StudentComponent } from './components/student/student.component';
 import { from } from 'rxjs';
-import { AuthGuard } from './auth/_services/Auth.guard';
+import { AuthGuard } from './auth/_services/auth.guard';
 
 export const routes: Routes = [
   {path: 'login', component: LoginComponent},
@@ -20,6 +21,7 @@ export const routes: Routes = [
         children: [
           {path: 'users', component: UsersComponent},
           {path: 'mark', component: MarkComponent},
+          {path: 'students', component: StudentComponent},
 
           {path: '**', redirectTo: 'home', pathMatch: 'full'}
         ]
@@ -31,6 +33,6 @@ export const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
+exports: [RouterModule],
 })
 export class AppRoutingModule {}
