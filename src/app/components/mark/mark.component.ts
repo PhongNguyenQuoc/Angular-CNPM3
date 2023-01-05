@@ -1,5 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ExportExelService } from 'src/app/Services/export-exel.service';
+import {Select} from "@ngxs/store";
+import {MarkState} from "./state/mark.state";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-mark',
@@ -9,7 +12,11 @@ import { ExportExelService } from 'src/app/Services/export-exel.service';
 export class MarkComponent implements OnInit {
   @ViewChild('mark') mark!: ElementRef;
 
-  constructor( private exportService: ExportExelService) { }
+  @Select(MarkState) state$!: Observable<MarkState.Model>
+
+  constructor( private exportService: ExportExelService) {
+    MarkState.actLoad.emit({subject_id: 1})
+  }
 
   ngOnInit(): void {
   }
