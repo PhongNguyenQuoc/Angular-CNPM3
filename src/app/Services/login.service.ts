@@ -23,4 +23,8 @@ export class LoginService {
       })
     )
   }
+
+  isLogin() {
+    return localStorage.getItem('Authen')
+  }
 }

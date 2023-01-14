@@ -3,14 +3,16 @@ import {Gender, JsStudentValue} from "../student/student";
 
 export interface JsMarkValue {
   id: number,
-  mark: number,
-  student: JsStudentValue[]
-  subject: JSSubjectValue[]
+  grade_first: number,
+  grade_second: number,
+  grade_third: number,
+  student: JsStudentValue
+  subject: JSSubjectValue
 }
 
 export interface JsMarkRequest {
   subject_id?: number
-  student_id?: number
+  value?: any
 }
 
 

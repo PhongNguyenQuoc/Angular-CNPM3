@@ -1,7 +1,7 @@
 <!--Access Denied-->
 
 <div>
-  <div class="row">
+  <div class="row" *ngIf="state$ | async as state">
     <div class="col-12">
       <div class="card mb-4">
         <div class="card-header pb-0">
@@ -28,9 +28,18 @@
                     ID
                   </th>
                   <th
+                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                  >
+                  </th>
+                  <th
                     class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
                   >
-                    Name
+                    First Name
+                  </th>
+                  <th
+                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
+                  >
+                    Last Name
                   </th>
                   <th
                     class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
@@ -67,84 +76,81 @@
                   >
                     Status
                   </th>
-                  <th class="text-secondary opacity-7"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let student of students">
+                <tr *ngFor="let student of state?.data">
                   <td>
                     <p class="text-xs font-weight-bold mb-0 text-uppercase">
                       {{ student.id }}
                     </p>
                   </td>
                   <td>
-                    <div class="d-flex px-2 py-1">
-                      <div>
-                        <!-- <img
+                    <div>
+                      <img
                         src="../assets/img/team-4.jpg"
                         class="avatar avatar-sm me-3"
                         alt="user3"
-                      /> -->
-                      </div>
+                      />
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex px-2 py-1">
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">
-                          {{ student.first_name + " " + student.last_name }}
-                        </h6>
+                        <input class="mb-0 text-sm" #first_name value="{{ student?.first_name}}"
+                               (keyup.enter)="onUpdate(student.id, {'first_name': first_name.value})"/>
+                        <p class="text-xs text-secondary mb-0"></p>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex px-2 py-1">
+                      <div class="d-flex flex-column justify-content-center">
+                        <input class="mb-0 text-sm" #last_name value="{{  student.last_name }}"
+                               (keyup.enter)="onUpdate(student.id, {'last_name': last_name.value})">
                         <p class="text-xs text-secondary mb-0"></p>
                       </div>
                     </div>
                   </td>
                   <td class="align-middle text-center">
-                    <span class="text-secondary text-xs font-weight-bold">
-                      {{ student.birth_day | date: "dd/MM/yyyy" }}</span
-                    >
+                    <input type="date" class="text-secondary text-xs font-weight-bold" #birth_day value='{{ student.birth_day | date: "yyyy-MM-dd" }}'
+                           (change)="onUpdate(student.id, {'first_name': birth_day.value})">
                   </td>
                   <td>
-                    <p class="text-xs font-weight-bold mb-0 text-uppercase">
-                      {{ student.gender }}
-                    </p>
+                    <select class="text-xs font-weight-bold mb-0 text-uppercase" #gender (change)="onUpdate(student.id, {'gender': gender.value})">
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
                   </td>
                   <td>
-                    <p class="text-xs font-weight-bold mb-0 text-uppercase">
-                      {{ student.birth_place }}
-                    </p>
+                    <input type="text" class="text-xs font-weight-bold mb-0 text-uppercase" #birth_place value="{{ student.birth_place }}"
+                           (keyup.enter)="onUpdate(student.id, {'birth_place': birth_place.value})"/>
                   </td>
                   <td>
-                    <p class="text-xs font-weight-bold mb-0 text-uppercase">
-                      {{ student.address }}
-                    </p>
+                    <input class="text-xs font-weight-bold mb-0 text-uppercase" #address value="{{ student.address }}"
+                           (keyup.enter)="onUpdate(student.id, {'address': address.value})">
                   </td>
                   <td>
-                    <p class="text-xs font-weight-bold mb-0 text-uppercase">
-                      {{ student.phone }}
-                    </p>
+                    <input class="text-xs font-weight-bold mb-0 text-uppercase" #phone value="{{ student.phone }}"
+                           (keyup.enter)="onUpdate(student.id, {'phone': phone.value})"/>
                   </td>
                   <td>
-                    <p class="text-xs font-weight-bold mb-0 text-uppercase">
-                      {{ student.entry_point }}
-                    </p>
+                    <input type="number" min="10" max="30" class="text-xs font-weight-bold mb-0 text-uppercase" #entry_point value="{{ student.entry_point }}"
+                           (keyup.enter)="onUpdate(student.id, {'entry_point': entry_point.value})"/>
                   </td>
                   <td class="align-middle text-center text-sm">
                     <span
                       *ngIf="student.status == 'active'; else inactive"
                       class="badge badge-sm bg-gradient-success"
+                      (click)="onUpdate(student.id, {'status': status.INACTIVE})"
                       >{{ student.status }}
                     </span>
                     <ng-template #inactive>
                       <span class="badge badge-sm bg-gradient-danger"
+                            (click)="onUpdate(student.id, {'status': status.ACTIVE})"
                         >{{ student.status }}
                       </span>
                     </ng-template>
-                  </td>
-                  <td class="align-middle">
-                    <a
-                      href="javascript:;"
-                      class="text-secondary font-weight-bold text-xs"
-                      data-toggle="tooltip"
-                      data-original-title="Edit student"
-                    >
-                      Edit
-                    </a>
                   </td>
                 </tr>
               </tbody>
@@ -183,7 +189,7 @@
               <input
                 type="text"
                 id="firstname"
-                class="form-control validate"
+                class="form-control validate add"
                 formControlName="first_name"
               />
               <label data-error="wrong" data-success="right" for="firstname"
@@ -196,7 +202,7 @@
               <input
                 type="text"
                 id="lastname"
-                class="form-control validate"
+                class="form-control validate add"
                 formControlName="last_name"
               />
               <label data-error="wrong" data-success="right" for="lastname"
@@ -209,7 +215,7 @@
               <input
                 type="date"
                 id="dob"
-                class="form-control validate"
+                class="form-control validate add "
                 formControlName="birth_day"
               />
               <label data-error="wrong" data-success="right" for="dob"
@@ -219,15 +225,19 @@
 
             <div class="md-form mb-4">
               <!-- <i class="fas fa-lock prefix grey-text"></i> -->
-              <input
-                type="text"
-                id="gender"
-                class="form-control validate"
-                formControlName="gender"
-              />
+<!--              <input-->
+<!--                type="text"-->
+<!--                id="gender"-->
+<!--                class="form-control validate add"-->
+<!--                formControlName="gender"-->
+<!--              />-->
               <label data-error="wrong" data-success="right" for="gender"
-                >Gender</label
+              >Gender</label
               >
+              <select formControlName="gender" class="form-select" id="gender">
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+              </select>
             </div>
 
             <div class="md-form mb-4">
@@ -235,7 +245,7 @@
               <input
                 type="text"
                 id="birth_place"
-                class="form-control validate"
+                class="form-control validate add"
                 formControlName="birth_place"
               />
               <label data-error="wrong" data-success="right" for="birth_place"
@@ -248,7 +258,7 @@
               <input
                 type="text"
                 id="address"
-                class="form-control validate"
+                class="form-control validate add"
                 formControlName="address"
               />
               <label data-error="wrong" data-success="right" for="address"
@@ -261,7 +271,7 @@
               <input
                 type="text"
                 id="phone"
-                class="form-control validate"
+                class="form-control validate add"
                 formControlName="phone"
               />
               <label data-error="wrong" data-success="right" for="phone"
@@ -274,7 +284,7 @@
               <input
                 type="number"
                 id="entry_point"
-                class="form-control validate"
+                class="form-control validate add"
                 formControlName="entry_point"
                 min="10" max="30"
               />
@@ -283,7 +293,7 @@
               >
             </div>
             <div class="modal-footer d-flex justify-content-center">
-              <button class="btn btn-default" (click)="onAddSubmit()">
+              <button class="btn btn-default" (click)="onAddSubmit()" data-bs-dismiss="modal">
                 Submit
               </button>
             </div>

@@ -87,8 +87,8 @@ export class SubjectState {
     ctx: StateContext<SubjectState.Model>,
     action: EmitterAction<JsRequest>
   ) {
-    const sid = { id: action.payload.id }
-    const url= PathBind.transform(STATE_API.UPDATE, sid)
+    const id = { id: action.payload.id }
+    const url= PathBind.transform(STATE_API.UPDATE, id)
     return this.http.put<any>(url, {...action.payload.value})
   }
 }

@@ -1,3 +1,17 @@
 td {
   text-align: center;
 }
+input,select {
+  border: 0;
+  outline: none;
+  text-align: center;
+}
+p {
+  text-align: center;
+}
+
+.add {
+  border-bottom: 2px solid lightblue;
+  outline: 1px #0eadca;
+}
+

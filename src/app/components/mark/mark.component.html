@@ -1,14 +1,149 @@
-<div class="mark-component" *ngIf="state$ | async as state">
+<div class="mark-component" *ngIf="subjectState$ | async as state">
   <ng-container *ngIf="!!state">
-    <mat-form-field appearance="fill">
-      <mat-label>Favorite food</mat-label>
-      <mat-select >
-        <mat-option *ngFor="let item of state?.data" [value]="item.id">
-          {{item.id}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+    <label> Choose Subject</label>
+    <select (change)="loadMark($event)" [(ngModel)]="subjectSelected" class="form-select w-25">
+      <option selected hidden disabled>Choose Subject</option>
+      <option *ngFor="let item of state?.data"  value="{{item.id}}" >{{item.name}}</option>
+    </select>
   </ng-container>
+  <div *ngIf="state$ | async as mark " >
 
+    <ng-container *ngIf="!!isLoader">
+
+      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" *ngIf="studentState$ | async as students">
+              <label> Choose Student</label>
+              <select [(ngModel)]="studentId"  class="form-select">
+                <option *ngFor="let item of students?.data" value="{{item?.id}}">{{item?.first_name}} {{item?.last_name}}</option>
+              </select>
+
+              <label> Choose Grade Scope</label>
+              <select (change)="onSelectGrande()" class="form-select" [(ngModel)]="grandeType">
+                <option value="grade_first">Grade First Scope</option>
+                <option value="grade_second">Grade Second Scope</option>
+                <option value="grade_third">Grade Third Scope</option>
+              </select>
+              <input  class="form-control" type="number" min="0" max="10" placeholder="Enter Scope" *ngIf="!!isSelectGrade" [(ngModel)]="scope">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary"
+                      (click)="onAdd({grade_first: scope, subject: subjectSelected, student: studentId})"
+                      *ngIf="grandeType == 'grade_first'"
+                      data-bs-dismiss="modal"
+              >Submit</button>
+              <button type="button" class="btn btn-primary"
+                      (click)="onAdd({grade_second: scope, subject: subjectSelected, student: studentId})"
+                      *ngIf="grandeType == 'grade_second'"
+                      data-bs-dismiss="modal"
+              >Submit</button>
+              <button type="button" class="btn btn-primary"
+                      (click)="onAdd({grade_third: scope, subject: subjectSelected, student: studentId})"
+                      *ngIf="grandeType == 'grade_third'"
+                      data-bs-dismiss="modal"
+              >Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--Modal-->
+      <div class="col-12 mt-3" #data>
+        <div class="card mb-4">
+          <div class="card-header pb-0">
+            <h6>Mark table</h6>
+            <button class="btn btn-success mt-2"(click)="export_exel()">Export Exel</button>
+            <!--Modal-->
+            <button type="button" class="btn btn-info mt-2 ms-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+              Import Mark
+            </button>
+          </div>
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-center font-weight-bolder opacity-7">Studen ID</th>
+                  <th class="text-uppercase text-secondary text-center font-weight-bolder opacity-7">Name</th>
+                  <th class="text-uppercase text-secondary text-center font-weight-bolder opacity-7 ps-2">Gender</th>
+                  <th class="text-center text-uppercase text-secondary text-center font-weight-bolder opacity-7">DoB</th>
+                  <th class="text-center text-uppercase text-secondary text-center font-weight-bolder opacity-7">Status</th>
+                  <th class="text-uppercase text-secondary text-center font-weight-bolder opacity-7 ps-2">Grade First</th>
+                  <th class="text-uppercase text-secondary text-center font-weight-bolder opacity-7 ps-2">Grade Second</th>
+                  <th class="text-uppercase text-secondary text-center font-weight-bolder opacity-7 ps-2">Grade Third</th>
+                  <th class="text-uppercase text-secondary text-center font-weight-bolder opacity-7 ps-2">Total</th>
+                </tr>
+                </thead>
+                <tbody *ngIf="hasValue">
+                <ng-container *ngFor="let item of mark?.data">
+                  <tr>
+                    <td>
+                      <p class="text-center font-weight-bold mb-0 border-0">{{item?.student?.id}}</p>
+                    </td>
+                    <td >
+                      <div class="d-flex px-2 py-1">
+                        <div class="d-flex flex-column justify-content-center">
+                          <p class="mb-0 text-sm bg-white border-0"
+                          >{{item?.student?.first_name}} {{item?.student?.first_name}}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <p class="text-center font-weight-bold mb-0 border-0">{{item?.student?.gender?.toUpperCase()}}</p>
+                    </td>
+                    <td class="align-middle text-center text-sm">
+                      <p class="text-secondary text-center font-weight-bold border-0"  >{{item?.student?.birth_day}}</p>
+                    </td>
+                    <td class="align-middle text-center">
+                      <span class=" text-center badge badge-sm bg-gradient-success" *ngIf="item?.student?.status === status.ACTIVE; else INACTIVE">{{item?.student?.status}}</span>
+                      <ng-template #INACTIVE>
+                        <span class=" text-center badge badge-sm bg-gradient-danger">{{item?.student?.status}}</span>
+                      </ng-template>
+                    </td>
+                    <td class="align-middle text-center">
+                      <input class="text-secondary text-centers font-weight-bold border-0"
+                             style="outline: none"
+                             value="{{item?.grade_first}}"
+                             #grade_first
+                             (keyup.enter)="onUpdate(item.id, {'grade_first': grade_first.value})"
+                      />
+                      <span hidden>{{item?.grade_first}}</span>
+                    </td>
+                    <td class="align-middle text-center">
+                      <input class="text-secondary text-center font-weight-bold border-0" style="outline: none"
+                             value="{{item?.grade_second}}"
+                             #grade_second
+                             (keyup.enter)="onUpdate(item.id, {grade_second: grade_second.value})"/>
+                      <span hidden>{{item?.grade_second}}</span>
+                    </td>
+                    <td class="align-middle text-center">
+                      <input class="text-secondary text-center font-weight-bold border-0"style="outline: none"
+                             value="{{item?.grade_third}}"
+                             #grade_third
+                             (keyup.enter)="onUpdate(item.id, {'grade_third': grade_third.value})"/>
+                      <span hidden>{{item?.grade_third}}</span>
+                    </td>
+                    <td class="align-middle text-center">
+                      <p class="text-secondary text-center font-weight-bold border-0"  >
+                        {{(item.grade_third + item.grade_second + item.grade_first) / 3 | number:'1.0-1'}}
+                      </p>
+                    </td>
+                  </tr>
+                </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #empty>
+      <h1>No Data</h1>
+    </ng-template>
+  </div>
 </div>
-<button class="btn btn-success" style="display: block; margin-left: 30px; margin-top: 30px" (click)="export_exel()">Export Exel</button>

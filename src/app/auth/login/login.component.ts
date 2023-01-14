@@ -11,7 +11,9 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   formLogin!: FormGroup;
-  constructor(private LoginService: LoginService, private fb: FormBuilder, private router: Router) {}
+  constructor(private LoginService: LoginService, private fb: FormBuilder, private router: Router) {
+    localStorage.clear()
+  }
 
   ngOnInit(): void {
     localStorage.clear()
@@ -27,7 +29,7 @@ export class LoginComponent implements OnInit {
       return
     }
     this.LoginService.login(this.formLogin.value).subscribe((res) => {
-      this.router.navigate(['home'])
+      this.router.navigate(['/dashboard'])
     },
     (error => {
       if(error.status === 401) {

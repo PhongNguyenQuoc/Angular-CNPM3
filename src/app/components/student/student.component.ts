@@ -3,6 +3,10 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { StudentService } from './../../Services/student.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import {Select} from "@ngxs/store";
+import {Observable} from "rxjs";
+import { StudentState } from './state/student.state';
+import {Status} from "../../model/student/student";
 
 @Component({
   selector: 'app-student',
@@ -13,8 +17,39 @@ export class StudentComponent implements OnInit {
 
   students: any
   form!: FormGroup
+  status= Status
+  @Select(StudentState) state$!: Observable<StudentState.Model>
 
-  constructor(private studentService: StudentService,private router: Router, private formBuilder: FormBuilder) { }
+  constructor(private studentService: StudentService,private router: Router, private formBuilder: FormBuilder) {
+    StudentState.actLoad.emit().subscribe(_ =>{}, error => {
+      if(error.status == 504) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'ECONNREFUSED',
+          confirmButtonText: 'Return Login',
+          footer: 'Access denied by URL authorization policy on the Web server.'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.router.navigate(['/login'])
+          }
+        })
+      }
+      else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'ACCESS IS DENIED',
+          confirmButtonText: 'Return Home',
+          footer: 'Access denied by URL authorization policy on the Web server.'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.router.navigate(['/'])
+          }
+        })
+      }
+    })
+  }
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -28,9 +63,31 @@ export class StudentComponent implements OnInit {
       entry_point: ['', Validators.required],
     })
 
-    if(!!localStorage.getItem('Authen')) {
-      this.studentService.getAll().subscribe(res => {
-      this.students = res
+
+  }
+
+  onAddSubmit() {
+    if (this.form.invalid == true) {
+      Swal.fire('Can not be left blank');
+      return
+    }
+    StudentState.actAdd.emit(this.form.value).subscribe(_ => {
+      StudentState.actLoad.emit()
+    }, error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'ACCESS IS DENIED',
+        confirmButtonText: 'Return Home',
+        footer: 'Access denied by URL authorization policy on the Web server.'
+      })
+    })
+  }
+
+  onUpdate(id: number, value: any) {
+    console.log(value)
+    StudentState.actUpdate.emit({id: id, value: value}).subscribe(_ => {
+      StudentState.actLoad.emit()
     },(error => {
       Swal.fire({
         icon: 'error',
@@ -44,27 +101,5 @@ export class StudentComponent implements OnInit {
         }
       })
     }))
-    }
-    else
-      this.router.navigate(['/login'])
   }
-
-  onAddSubmit() {
-    if (this.form.invalid == true) {
-      Swal.fire('Can not be left blank');
-      return
-    }
-    this.studentService.add(this.form.value).subscribe(res => {
-      alert(res)
-    },(error => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'ACCESS IS DENIED',
-        confirmButtonText: 'Return Home',
-        footer: 'Access denied by URL authorization policy on the Web server.'
-      })
-    }))
-  }
-
 }

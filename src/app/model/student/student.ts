@@ -20,3 +20,8 @@ export enum Status {
   ACTIVE = 'active',
   INACTIVE = 'inactive'
 }
+
+export interface JsStudentRequest {
+  id: number
+  value: any
+}

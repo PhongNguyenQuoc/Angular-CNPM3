@@ -21,11 +21,19 @@ import { TokenInterceptorService } from './auth/_services/token-interceptor.serv
 import {SubjectState} from "./components/subject/state/subject.state";
 import {MarkState} from "./components/mark/state/mark.state";
 import { MatFormFieldModule} from "@angular/material/form-field";
-import {MatSelect, MatSelectModule} from "@angular/material/select";
+import { MatSelectModule} from "@angular/material/select";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {MatNativeDateModule} from '@angular/material/core';
+import {StudentState} from "./components/student/state/student.state";
+import {UserState} from "./components/users/state/user.state";
+import {LogoutComponent} from "./components/logout/logout.component";
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 const STATE = [
   SubjectState,
-  MarkState
+  MarkState,
+  StudentState,
+  UserState
 ]
 
 @NgModule({
@@ -38,6 +46,8 @@ const STATE = [
     MarkComponent,
     StudentComponent,
     LoginComponent,
+    LogoutComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
@@ -50,7 +60,10 @@ const STATE = [
     RouterModule.forRoot(routes),
     NgxsModule.forRoot(STATE),
     NgxsEmitPluginModule.forRoot(),
-    NgxsSelectSnapshotModule.forRoot()
+    NgxsSelectSnapshotModule.forRoot(),
+    BrowserAnimationsModule,
+    MatNativeDateModule,
+    ReactiveFormsModule,
   ],
   providers: [CookieService,{provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService,multi:true}],
   bootstrap: [AppComponent],

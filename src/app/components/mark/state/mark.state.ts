@@ -5,6 +5,7 @@ import {Emittable, Emitter, EmitterAction, Receiver} from "@ngxs-labs/emitter";
 import {JsMarkRequest, JsMarkValue} from "../../../model/mark/mark";
 import {take} from "rxjs";
 import {tap} from "rxjs/operators";
+import {PathBind} from "../../../../commons/pipe-path-bind";
 
 export namespace MarkState {
   export type Mark = JsMarkValue
@@ -26,7 +27,9 @@ const STATE_NAME = 'MARK__STATE'
  * The API's endpoint
  */
 const STATE_API = {
-  GET: 'http://localhost:3000/api/mark',
+  GET: '/api/mark',
+  UPDATE: 'http://localhost:3000/api/mark/:id',
+  ADD: '/api/mark',
 }
 
 /**
@@ -55,6 +58,8 @@ export class MarkState {
   }
 
   @Emitter(MarkState.load) static actLoad: Emittable<JsMarkRequest>
+  @Emitter(MarkState.update) static actUpdate: Emittable<JsMarkRequest>
+  @Emitter(MarkState.add) static actAdd: Emittable<any>
 
   @Receiver()
   static load(
@@ -64,5 +69,23 @@ export class MarkState {
     return this.http.get<MarkState.Mark[]>(STATE_API.GET, {params: {subject_id: action.payload.subject_id}}).pipe(take(1), tap(data => {
           ctx.patchState({data})
     }))
+  }
+
+  @Receiver()
+  static add(
+    ctx: StateContext<MarkState.Model>,
+    action: EmitterAction<MarkState.Mark>
+  ) {
+    return this.http.post<any>(STATE_API.ADD, {...action.payload})
+  }
+
+  @Receiver()
+  static update(
+    ctx: StateContext<MarkState.Model>,
+    action: EmitterAction<JsMarkRequest>
+  ) {
+    const id = { id: action.payload.subject_id }
+    const url= PathBind.transform(STATE_API.UPDATE, id)
+    return this.http.put<any>(url, {...action.payload.value})
   }
 }

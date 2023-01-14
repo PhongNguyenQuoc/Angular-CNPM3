@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-logout',
@@ -9,12 +10,14 @@ import { AuthService } from '@auth0/auth0-angular';
 })
 export class LogoutComponent implements OnInit {
 
-  constructor(public auth: AuthService, @Inject(DOCUMENT) private doc: Document) { }
+  constructor(public auth: AuthService, private router: Router) {
+    localStorage.clear()
+    this.router.navigate([''])
+  }
 
   ngOnInit(): void {
   }
 
   logOut() {
-    this.auth.logout({returnTo: this.doc.location.origin})
   }
 }

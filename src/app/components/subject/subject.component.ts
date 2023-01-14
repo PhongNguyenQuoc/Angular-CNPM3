@@ -5,6 +5,7 @@ import * as model from  '../../model/subject/subject'
 import {Observable} from "rxjs";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import Swal from "sweetalert2";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-subject',
@@ -20,9 +21,35 @@ export class SubjectComponent implements OnInit {
   inactive = model.Status.INACTIVE
   status = model.Status
 
-  constructor( private formBuilder: FormBuilder) {
-    console.log(this.active)
-    SubjectState.actLoad.emit()
+  constructor( private formBuilder: FormBuilder, private router: Router) {
+    SubjectState.actLoad.emit().subscribe(_ =>{}, error => {
+      if(error.status == 504) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'ECONNREFUSED',
+          confirmButtonText: 'Return Login',
+          footer: 'Access denied by URL authorization policy on the Web server.'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.router.navigate(['/login'])
+          }
+        })
+      }
+      else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'ACCESS IS DENIED',
+          confirmButtonText: 'Return Home',
+          footer: 'End Of Login Session.'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.router.navigate(['/'])
+          }
+        })
+      }
+    })
   }
 
   ngOnInit(): void {
@@ -42,17 +69,37 @@ export class SubjectComponent implements OnInit {
     console.log(this.form.value)
     SubjectState.actAdd.emit(this.form.value).subscribe(res => {
       SubjectState.actLoad.emit()
-    })
+    },(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'ACCESS IS DENIED',
+        confirmButtonText: 'Return Home',
+        footer: 'Access denied by URL authorization policy on the Web server.'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/'])
+        }
+      })
+    }))
   }
 
   onUpdate(id: number, value: any) {
-    console.log(value.toString())
     SubjectState.actUpdate.emit({id, value}).subscribe(_ => {
-      console.log(value)
       SubjectState.actLoad.emit()
-    }, err => {
-      console.log(err)
-    })
+    },(error => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'ACCESS IS DENIED',
+        confirmButtonText: 'Return Home',
+        footer: 'Access denied by URL authorization policy on the Web server.'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/'])
+        }
+      })
+    }))
   }
 
 }
